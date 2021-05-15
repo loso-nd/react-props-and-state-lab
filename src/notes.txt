@@ -1,0 +1,119 @@
+## Lecture Code Along
+
+** Start with the simple task. We have button on which should be triggered by a synthetic event ( click ) 
+
+? <Filters /> needs a callback prop, onFindPetsClick. When the <Filters /> component calls onFindPetsClick, <App /> should fetch a list of pets using fetch().
+? How do we trigger the "find pets' button"
+! <App />
+
+    ?onFindPetsClick
+
+    ! Create a method called `onFindPetsClick` and using BDD we test to this function in the browser to ensure what we expect is actually happening.
+    
+    !To verify the props has been passed propperly we can check the react app in browser for the props. When button is clicked we should see "Click Me" in the console.
+
+    ?Should receive an onFindPetsClick callback prop. This callback prop gets called when the users clicks the 'Find pets' button.
+    !Once this metod is set up we will then pass this callback as a prop to the <Filter /> 
+
+        !Call the Onclick method on the existing button that will trigger this method from the <filter /> back up to the <Aoo /> to execute. 
+
+    !fetch the pets from the api/pets
+    !Once fetch is executed using setState to update we want to send all of our retrieved pets into the state. 
+    !After updating the state, we want to send the the state of the pets to our <PetBrowser /> via props
+
+? How do we set up the pet Component
+!<PetBrowser />
+
+    ?render()
+
+    !We need a pet Component for each pet that we have, by using .map() we can map over the array of objects from our retrieved data and return the <Pet /> with a prop for each single pet. 
+
+? Should receive a pet prop. Use the attributes in this data to render the pet card correctly. It should show the pet's name, type, age and weight. Based on the pet's gender, the component also needs to contain either a male (♂) or female (♀) symbol.
+
+? How do we access the properties of the props
+!<Pet />
+
+    !Call {this.props.pet.?} for all of the properties we want to be displayed on to page
+
+    !!reacall we use {this.props} bc this is a class component if this was functional component we would just use props
+
+
+? App should pass a callback prop, onChangeType, to <Filters />. This callback needs to update <App />'s state.filters.type
+!<Filter />
+
+    !In our <App /> we create a method called onChangeType pass it the event (e) as an arg.
+
+        ! We will console.log(e.target.value) to see if we indeed hit the target. Whatever option is selected should appear in our browser console
+
+        *The reason for `e.target.value` is becuase we want to pass this method as a prop to the <Filter /> which trigger when a user selects an option fromt the select dropdown menu.
+
+        !Pass the method onChangeType as a prop to the <Filters />
+
+        *We can check to see if this has been passed properly by looking at the props for filters via react app in the browser
+
+    ! In our <Filter /> we add the onChange event to the select element ( menu dropdown) and pass in the onChangeType prop from the <App /> component
+
+        *Once something in our select dropdown changes this will trigger the onChange callback, which will be passed that particular event ( pushed back to <App />)and either display the e.target.value  in the browser console or updated the state inside the <App />
+
+    !<App />
+        *Now we want to update the state of the filters based on the selected option from the user. or the (e.target.value)
+
+        !Using the spread operator, we can select the current key that we want to focus on (filters), copy the current state of filters or spread in the current state (...this.state.filters), grab the target or 'key' that we want to update.
+
+        *no need for Bracket[e.target.value] needed with the key bc we know exactly what we want ot target, which is the `type`. However, if this was a form, then we would possible be using a Bracket[e.target.value]. 
+        !See Paintings lecture for example.
+
+        ?To see this in action we can check our react App > state > filters. When we selected from the dropdown select menu we should see the [filter:{type: e.target.value}] change that particular selection to the e.target.value that was selected. 
+
+        **Now that we have the functionality working, when we click the button [find pets] we want the fetch to update the pets to only show what the user is asking to see from the select dropdown
+
+        !Key here is to update the fetch url. Instead of showing all pets we can only show one type if need be. 
+            ! 1) we want to check to see the type that was select
+            ! 2) we want to use a Ternary to check if the type is equal to 'all', if so then fetch from url = '/api/pets', else set the url ='/api/pets?type=${this.state.filters.type}
+            !we can check the browswer for the results by selecting an option from the dropdown select menu and clicking the button to tring the updated filter of the pets 
+
+?Each pet may or may not have an isAdopted property set to true. Using this property, render the correct button in the pet's card; if the pet is adopted, show the disabled button. Otherwise, show the primary button to adopt the pet.
+
+? How do we show one button based on wheter a pet isAdopted or not
+!<Pets />
+    *Ternary Options for the button. if isAdopted show the adopted button, else show the Adopt pet button.
+    *or We can also change the class name to match the disabled button and then change the text instead. 
+
+    ?Should receive an onAdoptPet callback prop. This callback prop gets called with the pet's id when the user clicks the adopt pet button — not when they click the disabled button!
+
+    !<App />
+        !create a method called onAdoptPet, and initally give it a console.log(id) for our BDD
+        !pass onAdoptPet as a prop to our <PetBrowser /> that way our pet components has access to the id as well
+        * check the react app in the browser to check that the prop has be passed properly
+
+    !<Pet />    
+        !Now <Pet /> has access to the property of id for the pets, and we pass that as a prop to the button as an Onclick synthetic event, bc we want to trigger the method stored up in the <App /> whenever it has be clicked.
+
+        ** Think back to event listeners and how we used to pass properties and args that were not event in addE.lister. we use to nest a callback to invoke the func and then have it run automatically, rather than have the function run automatically click [find pets] is clicked. 
+        
+        !onClick={this.props.onAdoptPet(id)} == runs automatically with (find pets) button
+        * onClick={() => this.props.onAdoptPet(id)} == passed an anonymous func then invoked when we click [Adopt Pet] button
+
+!<App />
+
+    **Update onAdoptPet method itself
+    ! we need to find the id, find the pet it is associated with and turn its apdopted to true
+    ! Mutltiple ways to do this. but we will use a .map() and .filter() are iterating fuctions which will create and return a new array. In other words there is no need to use the spread opertor here for the state.
+    ?Recall that .map returns a single item and fills that current items index with something and pushed it into the newly created array. 
+    ! we can either return the current pet that we are on, or return the pet with an updated attribute of and turn isAdopted: true
+
+    ?Explanation of onAdoptPet() method
+    *Create a variable called [updatedPet] set equal a map of the current state of the pets
+    !this.state.pets.map() 
+    *the map takes a callback func w/ pet as an arg 
+    *we want to return a ternary statement where if the selected pet.id is equal to the id arg passed into the function that means we are currently mapping over the pet we have clicked on, meaning that is the pet we need to change
+    *** Knowing that the pet is an Object, we want to spread the pet into the new exmpty obj. 
+    ****Find the key isAdopted:true, else return the original pet as is. 
+    *5 Then we add the setState and set the pets:updatedPets
+
+    !EX. pet 1 , does the pet.id match? if it does not then return the pet
+    ?EX pet 2. does the pet.id mmatch? If so, then updated the isAdopted:true
+
+
+
+!when to use bracket [e.target.value] in as setState
